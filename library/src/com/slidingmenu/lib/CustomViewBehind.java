@@ -55,14 +55,18 @@ public class CustomViewBehind extends ViewGroup {
 	}
 
 	public int getBehindWidth() {
-		return mContent.getWidth();
+		if (mContent != null)		
+			return mContent.getWidth();
+		return 0;
 	}
 
 	public void setContent(View v) {
 		if (mContent != null)
 			removeView(mContent);
 		mContent = v;
-		addView(mContent);
+		if (mContent != null){
+			addView(mContent);
+		}
 	}
 
 	public View getContent() {
@@ -77,7 +81,9 @@ public class CustomViewBehind extends ViewGroup {
 		if (mSecondaryContent != null)
 			removeView(mSecondaryContent);
 		mSecondaryContent = v;
-		addView(mSecondaryContent);
+		if (mSecondaryContent != null){
+			addView(mSecondaryContent);
+		}
 	}
 
 	public View getSecondaryContent() {
@@ -380,7 +386,7 @@ public class CustomViewBehind extends ViewGroup {
 	public void drawSelector(View content, Canvas canvas, float openPercent) {
 		if (!mSelectorEnabled) return;
 		if (mSelectorDrawable != null && mSelectedView != null) {
-			String tag = (String) mSelectedView.getTag(R.id.selected_view);
+			String tag = (String) mSelectedView.getTag();
 			if (tag.equals(TAG+"SelectedView")) {
 				canvas.save();
 				int left, right, offset;
@@ -407,12 +413,12 @@ public class CustomViewBehind extends ViewGroup {
 
 	public void setSelectedView(View v) {
 		if (mSelectedView != null) {
-			mSelectedView.setTag(R.id.selected_view, null);
+			mSelectedView.setTag(null);
 			mSelectedView = null;
 		}
 		if (v != null && v.getParent() != null) {
 			mSelectedView = v;
-			mSelectedView.setTag(R.id.selected_view, TAG+"SelectedView");
+			mSelectedView.setTag( TAG+"SelectedView");
 			invalidate();
 		}
 	}

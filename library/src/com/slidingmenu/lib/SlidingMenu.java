@@ -71,6 +71,9 @@ public class SlidingMenu extends RelativeLayout {
 	private OnOpenListener mOpenListener;
 
 	private OnCloseListener mCloseListener;
+	
+	private OnScrolledListener mOnScrolledListener;
+	
 
 	/**
 	 * The listener interface for receiving onOpen events.
@@ -86,7 +89,7 @@ public class SlidingMenu extends RelativeLayout {
 		/**
 		 * On open.
 		 */
-		public void onOpen();
+		public void onOpen(int leftOrRight, boolean animated, int duration);
 	}
 
 	/**
@@ -124,7 +127,7 @@ public class SlidingMenu extends RelativeLayout {
 		/**
 		 * On close.
 		 */
-		public void onClose();
+		public void onClose(int leftOrRight, boolean animated, int duration);
 	}
 
 	/**
@@ -144,6 +147,25 @@ public class SlidingMenu extends RelativeLayout {
 		 * On closed.
 		 */
 		public void onClosed();
+	}
+	
+	/**
+	 * The listener interface for receiving onScrolled events.
+	 * The class that is interested in processing a onScrolled
+	 * event implements this interface, and the object created
+	 * with that class is registered with a component using the
+	 * component's <code>setOnScrolledListener<code> method. When
+	 * the onScrolled event occurs, that object's appropriate
+	 * method is invoked.
+	 *
+	 * @see onScrolledEvent
+	 */
+	public interface OnScrolledListener {
+
+		/**
+		 * On scrolled.
+		 */
+		public void onScrolled(int scroll);
 	}
 
 	/**
@@ -214,67 +236,33 @@ public class SlidingMenu extends RelativeLayout {
 			public static final int POSITION_CLOSE = 1;
 
 			public void onPageScrolled(int position, float positionOffset,
-					int positionOffsetPixels) { }
+					int positionOffsetPixels) {
+				if (mOnScrolledListener != null) {
+					mOnScrolledListener.onScrolled(-positionOffsetPixels);
+				}
+			}
 
-			public void onPageSelected(int position) {
-				if (position == POSITION_OPEN && mOpenListener != null) {
-					mOpenListener.onOpen();
-				} else if (position == POSITION_CLOSE && mCloseListener != null) {
-					mCloseListener.onClose();
+			public void onPageSelected(int position, int fromPosition, boolean animated, int duration) {
+				if (position == fromPosition) return;
+				if (position == POSITION_CLOSE && mCloseListener != null) {
+					int leftOrRight = (fromPosition == 2)?1:0;
+					mCloseListener.onClose(leftOrRight, animated, duration);
+				} else if (position != POSITION_CLOSE && mOpenListener != null) {
+					int leftOrRight = (position == 2)?1:0;
+					mOpenListener.onOpen(leftOrRight, animated, duration);
 				}
 			}
 		});
 
-		// now style everything!
-		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SlidingMenu);
-		// set the above and behind views if defined in xml
-		int mode = ta.getInt(R.styleable.SlidingMenu_mode, LEFT);
-		setMode(mode);
-		int viewAbove = ta.getResourceId(R.styleable.SlidingMenu_viewAbove, -1);
-		if (viewAbove != -1) {
-			setContent(viewAbove);
-		} else {
-			setContent(new FrameLayout(context));
-		}
-		int viewBehind = ta.getResourceId(R.styleable.SlidingMenu_viewBehind, -1);
-		if (viewBehind != -1) {
-			setMenu(viewBehind); 
-		} else {
-			setMenu(new FrameLayout(context));
-		}
-		int touchModeAbove = ta.getInt(R.styleable.SlidingMenu_touchModeAbove, TOUCHMODE_MARGIN);
-		setTouchModeAbove(touchModeAbove);
-		int touchModeBehind = ta.getInt(R.styleable.SlidingMenu_touchModeBehind, TOUCHMODE_MARGIN);
-		setTouchModeBehind(touchModeBehind);
-
-		int offsetBehind = (int) ta.getDimension(R.styleable.SlidingMenu_behindOffset, -1);
-		int widthBehind = (int) ta.getDimension(R.styleable.SlidingMenu_behindWidth, -1);
-		if (offsetBehind != -1 && widthBehind != -1)
-			throw new IllegalStateException("Cannot set both behindOffset and behindWidth for a SlidingMenu");
-		else if (offsetBehind != -1)
-			setBehindOffset(offsetBehind);
-		else if (widthBehind != -1)
-			setBehindWidth(widthBehind);
-		else
-			setBehindOffset(0);
-		float scrollOffsetBehind = ta.getFloat(R.styleable.SlidingMenu_behindScrollScale, 0.33f);
-		setBehindScrollScale(scrollOffsetBehind);
-		int shadowRes = ta.getResourceId(R.styleable.SlidingMenu_shadowDrawable, -1);
-		if (shadowRes != -1) {
-			setShadowDrawable(shadowRes);
-		}
-		int shadowWidth = (int) ta.getDimension(R.styleable.SlidingMenu_shadowWidth, 0);
-		setShadowWidth(shadowWidth);
-		boolean fadeEnabled = ta.getBoolean(R.styleable.SlidingMenu_fadeEnabled, true);
-		setFadeEnabled(fadeEnabled);
-		float fadeDeg = ta.getFloat(R.styleable.SlidingMenu_fadeDegree, 0.33f);
-		setFadeDegree(fadeDeg);
-		boolean selectorEnabled = ta.getBoolean(R.styleable.SlidingMenu_selectorEnabled, false);
-		setSelectorEnabled(selectorEnabled);
-		int selectorRes = ta.getResourceId(R.styleable.SlidingMenu_selectorDrawable, -1);
-		if (selectorRes != -1)
-			setSelectorDrawable(selectorRes);
-		ta.recycle();
+		setMode(LEFT);
+		setTouchModeAbove(TOUCHMODE_MARGIN);
+		setTouchModeBehind(TOUCHMODE_MARGIN);
+		setBehindOffset(0);
+		setBehindScrollScale(0.33f);
+		setShadowWidth(0);
+		setFadeEnabled(true);
+		setFadeDegree(0.33f);
+		setSelectorEnabled(false);
 	}
 
 	/**
@@ -539,6 +527,19 @@ public class SlidingMenu extends RelativeLayout {
 			showContent(animate);
 		} else {
 			showMenu(animate);
+		}
+	}
+	
+	/**
+	 * Toggle the SlidingMenu. If it is open, it will be closed, and vice versa.
+	 *
+	 * @param animate true to animate the transition, false to ignore animation
+	 */
+	public void toggleSecondary(boolean animate) {
+		if (isSecondaryMenuShowing()) {
+			showContent(animate);
+		} else {
+			showSecondaryMenu(animate);
 		}
 	}
 
@@ -888,6 +889,15 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	public void setOnClosedListener(OnClosedListener listener) {
 		mViewAbove.setOnClosedListener(listener);
+	}
+	
+	/**
+	 * Sets the OnClosedListener. {@link OnClosedListener#onClosed() OnClosedListener.onClosed()} will be called after the SlidingMenu is closed
+	 *
+	 * @param listener the new OnClosedListener
+	 */
+	public void setOnScrolledListener(OnScrolledListener listener) {
+		mOnScrolledListener = listener;
 	}
 
 	public static class SavedState extends BaseSavedState {

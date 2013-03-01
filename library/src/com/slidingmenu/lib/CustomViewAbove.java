@@ -50,7 +50,7 @@ public class CustomViewAbove extends ViewGroup {
 
 	private View mContent;
 
-	private int mCurItem;
+	private int mCurItem = 1; //so that default is on default page
 	private Scroller mScroller;
 
 	private boolean mScrollingCacheEnabled;
@@ -123,7 +123,7 @@ public class CustomViewAbove extends ViewGroup {
 		 *
 		 * @param position Position index of the new selected page.
 		 */
-		public void onPageSelected(int position);
+		public void onPageSelected(int position, int fromPosition, boolean animated, int duration);
 
 	}
 
@@ -138,7 +138,7 @@ public class CustomViewAbove extends ViewGroup {
 			// This space for rent
 		}
 
-		public void onPageSelected(int position) {
+		public void onPageSelected(int position, int fromPosition, boolean animated, int duration) {
 			// This space for rent
 		}
 
@@ -223,15 +223,20 @@ public class CustomViewAbove extends ViewGroup {
 		}
 
 		item = mViewBehind.getMenuPage(item);
-
+		
 		final boolean dispatchSelected = mCurItem != item;
+		int oldItem = mCurItem;
 		mCurItem = item;
+
+		int duration = 0;
 		final int destX = getDestScrollX(mCurItem);
+		if (smoothScroll)
+			duration = smoothScrollDuration(destX, 0, velocity);
 		if (dispatchSelected && mOnPageChangeListener != null) {
-			mOnPageChangeListener.onPageSelected(item);
+			mOnPageChangeListener.onPageSelected(item, oldItem, smoothScroll, duration);
 		}
 		if (dispatchSelected && mInternalPageChangeListener != null) {
-			mInternalPageChangeListener.onPageSelected(item);
+			mInternalPageChangeListener.onPageSelected(item, oldItem, smoothScroll, duration);
 		}
 		if (smoothScroll) {
 			smoothScrollTo(destX, 0, velocity);
@@ -375,7 +380,28 @@ public class CustomViewAbove extends ViewGroup {
 	void smoothScrollTo(int x, int y) {
 		smoothScrollTo(x, y, 0);
 	}
-
+	
+	private int smoothScrollDuration(int x, int y, int velocity) {
+		int sx = getScrollX();
+		int dx = x - sx;
+		final int width = getBehindWidth();
+		final int halfWidth = width / 2;
+		final float distanceRatio = Math.min(1f, 1.0f * Math.abs(dx) / width);
+		final float distance = halfWidth + halfWidth *
+				distanceInfluenceForSnapDuration(distanceRatio);
+		
+		int duration = 0;
+		velocity = Math.abs(velocity);
+		if (velocity > 0) {
+			duration = 4 * Math.round(1000 * Math.abs(distance / velocity));
+		} else {
+			final float pageDelta = (float) Math.abs(dx) / width;
+			duration = (int) ((pageDelta + 1) * 100);
+			duration = MAX_SETTLE_DURATION;
+		}
+		duration = Math.min(duration, MAX_SETTLE_DURATION);
+		return duration;
+	}
 	/**
 	 * Like {@link View#scrollBy}, but scroll smoothly instead of immediately.
 	 *
@@ -408,22 +434,7 @@ public class CustomViewAbove extends ViewGroup {
 		setScrollingCacheEnabled(true);
 		mScrolling = true;
 
-		final int width = getBehindWidth();
-		final int halfWidth = width / 2;
-		final float distanceRatio = Math.min(1f, 1.0f * Math.abs(dx) / width);
-		final float distance = halfWidth + halfWidth *
-				distanceInfluenceForSnapDuration(distanceRatio);
-
-		int duration = 0;
-		velocity = Math.abs(velocity);
-		if (velocity > 0) {
-			duration = 4 * Math.round(1000 * Math.abs(distance / velocity));
-		} else {
-			final float pageDelta = (float) Math.abs(dx) / width;
-			duration = (int) ((pageDelta + 1) * 100);
-			duration = MAX_SETTLE_DURATION;
-		}
-		duration = Math.min(duration, MAX_SETTLE_DURATION);
+		int duration = smoothScrollDuration(x, y, velocity);
 
 		mScroller.startScroll(sx, sy, dx, dy, duration);
 		invalidate();
