@@ -74,6 +74,7 @@ public class SlidingMenu extends RelativeLayout {
 	
 	private OnScrolledListener mOnScrolledListener;
 	
+//	private OnScrolledListenerListener mScrollListener;
 
 	/**
 	 * The listener interface for receiving onOpen events.
@@ -166,6 +167,8 @@ public class SlidingMenu extends RelativeLayout {
 		 * On scrolled.
 		 */
 		public void onScrolled(int scroll);
+		public void onScrolledEnded(int scroll);
+		public void onScrolledStarted(int scroll);
 	}
 
 	/**
@@ -250,6 +253,22 @@ public class SlidingMenu extends RelativeLayout {
 				} else if (position != POSITION_CLOSE && mOpenListener != null) {
 					int leftOrRight = (position == 2)?1:0;
 					mOpenListener.onOpen(leftOrRight, animated, duration);
+				}
+			}
+
+			@Override
+			public void onScrollComplete(int position, float positionOffset,
+					int positionOffsetPixels) {
+				if (mOnScrolledListener != null) {
+					mOnScrolledListener.onScrolledEnded(-positionOffsetPixels);
+				}
+			}
+
+			@Override
+			public void onScrollStarted(int position, float positionOffset,
+					int positionOffsetPixels) {
+				if (mOnScrolledListener != null) {
+					mOnScrolledListener.onScrolledStarted(-positionOffsetPixels);
 				}
 			}
 		});
@@ -583,7 +602,11 @@ public class SlidingMenu extends RelativeLayout {
 		//		params.setMargins(left, top, i, bottom);
 		mViewBehind.setWidthOffset(i);
 	}
-
+	
+	public int getBehindWidth() {
+		return mViewBehind.getBehindWidth();
+	}
+	
 	/**
 	 * Sets the behind offset.
 	 *
@@ -996,23 +1019,24 @@ public class SlidingMenu extends RelativeLayout {
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void manageLayers(float percentOpen) {
-		if (Build.VERSION.SDK_INT < 11) return;
-
-		boolean layer = percentOpen > 0.0f && percentOpen < 1.0f;
-		final int layerType = layer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
-
-		if (layerType != getContent().getLayerType()) {
-			mHandler.post(new Runnable() {
-				public void run() {
-					Log.v(TAG, "changing layerType. hardware? " + (layerType == View.LAYER_TYPE_HARDWARE));
-					getContent().setLayerType(layerType, null);
-					getMenu().setLayerType(layerType, null);
-					if (getSecondaryMenu() != null) {
-						getSecondaryMenu().setLayerType(layerType, null);
-					}
-				}
-			});
-		}
+		return; // this is so bad on scroll performances!
+//		if (Build.VERSION.SDK_INT < 11) return;
+//
+//		boolean layer = percentOpen > 0.0f && percentOpen < 1.0f;
+//		final int layerType = layer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
+//
+//		if (layerType != getContent().getLayerType()) {
+//			mHandler.post(new Runnable() {
+//				public void run() {
+//					Log.v(TAG, "changing layerType. hardware? " + (layerType == View.LAYER_TYPE_HARDWARE));
+//					getContent().setLayerType(layerType, null);
+//					getMenu().setLayerType(layerType, null);
+//					if (getSecondaryMenu() != null) {
+//						getSecondaryMenu().setLayerType(layerType, null);
+//					}
+//				}
+//			});
+//		}
 	}
 
 }

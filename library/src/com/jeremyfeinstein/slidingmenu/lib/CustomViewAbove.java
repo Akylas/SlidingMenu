@@ -116,6 +116,8 @@ public class CustomViewAbove extends ViewGroup {
 		 * @param positionOffsetPixels Value in pixels indicating the offset from position.
 		 */
 		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+		public void onScrollComplete(int position, float positionOffset, int positionOffsetPixels);
+		public void onScrollStarted(int position, float positionOffset, int positionOffsetPixels);
 
 		/**
 		 * This method will be invoked when a new page becomes selected. Animation is not
@@ -145,6 +147,19 @@ public class CustomViewAbove extends ViewGroup {
 		public void onPageScrollStateChanged(int state) {
 			// This space for rent
 		}
+		
+		@Override
+		public void onScrollComplete(int position, float positionOffset, int positionOffsetPixels)
+		{
+			
+		}
+
+		@Override
+		public void onScrollStarted(int position, float positionOffset,
+				int positionOffsetPixels) {
+			// TODO Auto-generated method stub
+			
+		}
 
 	}
 
@@ -168,7 +183,7 @@ public class CustomViewAbove extends ViewGroup {
 		mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
 		mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
 		setInternalPageChangeListener(new SimpleOnPageChangeListener() {
-			public void onPageSelected(int position) {
+			public void onPageSelected(int position, int fromPosition, boolean animated, int duration) {
 				if (mViewBehind != null) {
 					switch (position) {
 					case 0:
@@ -548,7 +563,33 @@ public class CustomViewAbove extends ViewGroup {
 			mInternalPageChangeListener.onPageScrolled(position, offset, offsetPixels);
 		}
 	}
-
+	
+	protected void onScrollComplete(int xpos) {
+		final int widthWithMargin = getWidth();
+		final int position = xpos / widthWithMargin;
+		final int offsetPixels = xpos % widthWithMargin;
+		final float offset = (float) offsetPixels / widthWithMargin;
+		if (mOnPageChangeListener != null) {
+			mOnPageChangeListener.onScrollComplete(position, offset, offsetPixels);
+		}
+		if (mInternalPageChangeListener != null) {
+			mInternalPageChangeListener.onScrollComplete(position, offset, offsetPixels);
+		}
+	}
+	
+	protected void onScrollStarted(int xpos) {
+		final int widthWithMargin = getWidth();
+		final int position = xpos / widthWithMargin;
+		final int offsetPixels = xpos % widthWithMargin;
+		final float offset = (float) offsetPixels / widthWithMargin;
+		if (mOnPageChangeListener != null) {
+			mOnPageChangeListener.onScrollStarted(position, offset, offsetPixels);
+		}
+		if (mInternalPageChangeListener != null) {
+			mInternalPageChangeListener.onScrollStarted(position, offset, offsetPixels);
+		}
+	}
+	
 	private void completeScroll() {
 		boolean needPopulate = mScrolling;
 		if (needPopulate) {
@@ -738,11 +779,13 @@ public class CustomViewAbove extends ViewGroup {
 			break;
 		case MotionEvent.ACTION_UP:
 			if (mIsBeingDragged) {
+				
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
 				int initialVelocity = (int) VelocityTrackerCompat.getXVelocity(
 						velocityTracker, mActivePointerId);
 				final int scrollX = getScrollX();
+				onScrollComplete(scrollX);
 				//				final int widthWithMargin = getWidth();
 				//				final float pageOffset = (float) (scrollX % widthWithMargin) / widthWithMargin;
 				// TODO test this. should get better flinging behavior
@@ -814,7 +857,8 @@ public class CustomViewAbove extends ViewGroup {
 	public void scrollTo(int x, int y) {
 		super.scrollTo(x, y);
 		mScrollX = x;
-		mViewBehind.scrollBehindTo(mContent, x, y);	
+		if (mEnabled)
+			mViewBehind.scrollBehindTo(mContent, x, y);	
 		((SlidingMenu)getParent()).manageLayers(getPercentOpen());
 	}
 
@@ -865,6 +909,10 @@ public class CustomViewAbove extends ViewGroup {
 	}
 
 	private void startDrag() {
+		if (mIsBeingDragged == false)
+		{
+			onScrollStarted((int) mLastMotionX);
+		}
 		mIsBeingDragged = true;
 		mQuickReturn = false;
 	}
