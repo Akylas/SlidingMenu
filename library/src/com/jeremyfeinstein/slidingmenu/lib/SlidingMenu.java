@@ -608,6 +608,16 @@ public class SlidingMenu extends RelativeLayout {
 		mViewBehind.setWidthOffset(i);
 	}
 	
+	/**
+	 * Sets the behind secondary menu offset
+	 * 
+	 * @param i The margin, in pixels, on the right of the screen that the behind view scrolls to.
+	 */
+	public void setSecondaryBehindOffset(int i){
+		mViewBehind.setSecondaryWidthOffset(i);
+	}
+
+	
 	public int getBehindWidth() {
 		return mViewBehind.getBehindWidth();
 	}
@@ -621,6 +631,17 @@ public class SlidingMenu extends RelativeLayout {
 	public void setBehindOffsetRes(int resID) {
 		int i = (int) getContext().getResources().getDimension(resID);
 		setBehindOffset(i);
+	}
+	
+	/**
+	 * Sets the behind secondary offset
+	 * 
+	 * @param resID The dimension resource id to be set as the behind offset.
+	 * The menu, when open, will leave this width margin on the right of the screen.
+	 */
+	public void setSecondaryBehindOffsetRes(int resID){
+		int i = (int) getContext().getResources().getDimension(resID);
+		setSecondaryBehindOffset(i);
 	}
 
 	/**
