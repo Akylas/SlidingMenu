@@ -12,7 +12,6 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewConfigurationCompat;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.FloatMath;
 import android.util.Log;
@@ -67,6 +66,9 @@ public class CustomViewAbove extends ViewGroup {
 	 */
 	private float mLastMotionX;
 	private float mLastMotionY;
+	
+	@SuppressWarnings("rawtypes")
+	private Class mClassForNonViewPager = null;
 	/**
 	 * ID of the active pointer. This is used to retain consistency during
 	 * drags/flings if multiple pointers are used.
@@ -625,7 +627,7 @@ public class CustomViewAbove extends ViewGroup {
 		return mTouchMode;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean findClassAtPosition(View parent, int x, int y, Class lookupClass) {
 		Rect rect = new Rect();
         parent.getGlobalVisibleRect(rect);
@@ -645,8 +647,14 @@ public class CustomViewAbove extends ViewGroup {
 	    return false;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public void setClassForNonViewPager(Class theClass)
+	{
+		this.mClassForNonViewPager = theClass;
+	}
+	
 	private boolean isTopViewPager(View parent, float x, float y) {
-		return (findClassAtPosition(parent, (int)x, (int)y, ViewPager.class));
+		return (findClassAtPosition(parent, (int)x, (int)y, mClassForNonViewPager));
 	}
 
 	private boolean thisTouchAllowed(MotionEvent ev) {
@@ -662,7 +670,7 @@ public class CustomViewAbove extends ViewGroup {
 			case SlidingMenu.TOUCHMODE_MARGIN:
 				return mViewBehind.marginTouchAllowed(mContent, x);
 			case SlidingMenu.TOUCHMODE_NON_VIEWPAGER:
-				return !isTopViewPager(mContent, ev.getX(), ev.getY());
+				return mClassForNonViewPager == null || !isTopViewPager(mContent, ev.getX(), ev.getY());
 			}
 		}
 		return false;

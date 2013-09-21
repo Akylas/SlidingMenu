@@ -791,6 +791,17 @@ public class SlidingMenu extends RelativeLayout {
 	public void setBehindCanvasTransformer(CanvasTransformer t) {
 		mViewBehind.setCanvasTransformer(t);
 	}
+	
+	/**
+	 * Sets the class to use for the TOUCHMODE_NON_VIEWPAGER
+	 *
+	 * @param theClass the class to use
+	 */
+	@SuppressWarnings("rawtypes")
+	public void setClassForNonViewPager(Class theClass)
+	{
+		mViewAbove.setClassForNonViewPager(theClass);
+	}
 
 	/**
 	 * Gets the touch mode above.
