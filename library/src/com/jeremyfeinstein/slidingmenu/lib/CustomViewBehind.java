@@ -143,7 +143,9 @@ public class CustomViewBehind extends ViewGroup {
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		final int width = r - l;
 		final int height = b - t;
-		mContent.layout(0, 0, width-mWidthOffset, height);
+		if (mContent != null) {
+			mContent.layout(0, 0, width-mWidthOffset, height);
+		}
 		if (mSecondaryContent != null)
 			mSecondaryContent.layout(0, 0, width-mSecondaryWidthOffset, height);
 	}
@@ -155,7 +157,9 @@ public class CustomViewBehind extends ViewGroup {
 		setMeasuredDimension(width, height);
 		final int contentWidth = getChildMeasureSpec(widthMeasureSpec, 0, width-mWidthOffset);
 		final int contentHeight = getChildMeasureSpec(heightMeasureSpec, 0, height);
-		mContent.measure(contentWidth, contentHeight);
+		if (mContent != null) {
+			mContent.measure(contentWidth, contentHeight);
+		}
 		if (mSecondaryContent != null){
 			final int secondaryContentWidth = getChildMeasureSpec(widthMeasureSpec, 0, width - mSecondaryWidthOffset);
 			mSecondaryContent.measure(secondaryContentWidth, contentHeight);
