@@ -51,11 +51,6 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	public static final int TOUCHMODE_NONE = 2;
 
-	/** Constant value for use with setTouchModeAbove(). Denies the SlidingMenu to be opened with a swipe
-	 * gesture
-	 */
-	public static final int TOUCHMODE_NON_VIEWPAGER = 3;
-
 	/** Constant value for use with setMode(). Puts the menu to the left of the content.
 	 */
 	public static final int LEFT = 0;
@@ -821,7 +816,7 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	public void setTouchModeAbove(int i) {
 		if (i != TOUCHMODE_FULLSCREEN && i != TOUCHMODE_MARGIN
-				&& i != TOUCHMODE_NONE && i != TOUCHMODE_NON_VIEWPAGER) {
+				&& i != TOUCHMODE_NONE) {
 			throw new IllegalStateException("TouchMode must be set to either" +
 					"TOUCHMODE_FULLSCREEN or TOUCHMODE_MARGIN or TOUCHMODE_NONE.");
 		}
@@ -837,7 +832,7 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	public void setTouchModeBehind(int i) {
 		if (i != TOUCHMODE_FULLSCREEN && i != TOUCHMODE_MARGIN
-				&& i != TOUCHMODE_NONE && i != TOUCHMODE_NON_VIEWPAGER) {
+				&& i != TOUCHMODE_NONE) {
 			throw new IllegalStateException("TouchMode must be set to either" +
 					"TOUCHMODE_FULLSCREEN or TOUCHMODE_MARGIN or TOUCHMODE_NONE.");
 		}
@@ -1124,5 +1119,4 @@ public class SlidingMenu extends RelativeLayout {
 //			});
 //		}
 	}
-
 }

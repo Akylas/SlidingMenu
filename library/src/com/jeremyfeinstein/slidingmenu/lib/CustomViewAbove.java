@@ -662,6 +662,7 @@ public class CustomViewAbove extends ViewGroup {
 		if (isMenuOpen()) {
 			return mViewBehind.menuOpenTouchAllowed(mContent, mCurItem, x);
 		} else {
+			if (mClassForNonViewPager != null && isTopViewPager(mContent, ev.getX(), ev.getY())) return false;
 			switch (mTouchMode) {
 			case SlidingMenu.TOUCHMODE_FULLSCREEN:
 				return !isInIgnoredView(ev);
@@ -669,8 +670,6 @@ public class CustomViewAbove extends ViewGroup {
 				return false;
 			case SlidingMenu.TOUCHMODE_MARGIN:
 				return mViewBehind.marginTouchAllowed(mContent, x);
-			case SlidingMenu.TOUCHMODE_NON_VIEWPAGER:
-				return mClassForNonViewPager == null || !isTopViewPager(mContent, ev.getX(), ev.getY());
 			}
 		}
 		return false;
