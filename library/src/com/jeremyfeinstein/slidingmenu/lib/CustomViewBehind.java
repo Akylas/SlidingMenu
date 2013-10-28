@@ -13,7 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.ViewTransformer;
 
 public class CustomViewBehind extends ViewGroup {
 
@@ -29,7 +29,7 @@ public class CustomViewBehind extends ViewGroup {
 	private int mMarginThreshold;
 	private int mWidthOffset;
 	private int mSecondaryWidthOffset;
-	private CanvasTransformer mTransformer;
+	private ViewTransformer mTransformer, mSecondaryTransformer;
 	private boolean mChildrenEnabled;
 
 	public CustomViewBehind(Context context) {
@@ -46,8 +46,12 @@ public class CustomViewBehind extends ViewGroup {
 		mViewAbove = customViewAbove;
 	}
 
-	public void setCanvasTransformer(CanvasTransformer t) {
+	public void setViewTransformer(ViewTransformer t) {
 		mTransformer = t;
+	}
+	
+	public void setSecondaryViewTransformer(ViewTransformer t) {
+		mSecondaryTransformer = t;
 	}
 
 	public void setWidthOffset(int i) {
@@ -114,8 +118,15 @@ public class CustomViewBehind extends ViewGroup {
 	@Override
 	public void scrollTo(int x, int y) {
 		super.scrollTo(x, y);
-		if (mTransformer != null)
+		float percent = mViewAbove.getNonAbsPercentOpen();
+		percent = Math.abs(percent);
+		if (percent > 0 && mTransformer != null || mSecondaryTransformer != null) {
+			if (mTransformer != null)
+				mTransformer.transformView(mContent, percent);
+			if (mSecondaryTransformer != null)
+				mSecondaryTransformer.transformView(mSecondaryContent, percent);
 			invalidate();
+		}
 	}
 
 	@Override
@@ -130,13 +141,8 @@ public class CustomViewBehind extends ViewGroup {
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
-		if (mTransformer != null) {
-			canvas.save();
-			mTransformer.transformCanvas(canvas, mViewAbove.getPercentOpen());
-			super.dispatchDraw(canvas);
-			canvas.restore();
-		} else
-			super.dispatchDraw(canvas);
+		
+		super.dispatchDraw(canvas);
 	}
 
 	@Override
