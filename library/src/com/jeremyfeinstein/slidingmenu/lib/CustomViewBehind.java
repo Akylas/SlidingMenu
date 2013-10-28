@@ -176,6 +176,7 @@ public class CustomViewBehind extends ViewGroup {
 	private boolean mFadeEnabled;
 	private final Paint mFadePaint = new Paint();
 	private float mScrollScale;
+	private float mSecondaryScrollScale;
 	private Drawable mShadowDrawable;
 	private Drawable mSecondaryShadowDrawable;
 	private int mShadowWidth;
@@ -222,6 +223,14 @@ public class CustomViewBehind extends ViewGroup {
 		return mScrollScale;
 	}
 
+	public void setSecondaryScrollScale(float scrollScale) {
+		mSecondaryScrollScale = scrollScale;
+	}
+
+	public float getSecondaryScrollScale() {
+		return mSecondaryScrollScale;
+	}
+
 	public void setShadowDrawable(Drawable shadow) {
 		mShadowDrawable = shadow;
 		invalidate();
@@ -266,16 +275,16 @@ public class CustomViewBehind extends ViewGroup {
 		} else if (mMode == SlidingMenu.RIGHT) {
 			if (x <= content.getLeft()) vis = View.INVISIBLE;
 			scrollTo((int)(getSecondaryBehindWidth() - getWidth() + 
-					(x-getSecondaryBehindWidth())*mScrollScale), y);
+					(x-getSecondaryBehindWidth())*mSecondaryScrollScale), y);
 		} else if (mMode == SlidingMenu.LEFT_RIGHT) {
 			mContent.setVisibility(x >= content.getLeft() ? View.INVISIBLE : View.VISIBLE);
 			mSecondaryContent.setVisibility(x <= content.getLeft() ? View.INVISIBLE : View.VISIBLE);
 			vis = x == 0 ? View.INVISIBLE : View.VISIBLE;
 			if (x <= content.getLeft()) {
-				scrollTo((int)((x + getBehindWidth())*mScrollScale), y);				
+				scrollTo((int)((x + getBehindWidth())*mScrollScale), y);
 			} else {
 				scrollTo((int)(getSecondaryBehindWidth() - getWidth() + 
-						(x-getSecondaryBehindWidth())*mScrollScale), y);				
+						(x-getSecondaryBehindWidth())*mSecondaryScrollScale), y);
 			}
 		}
 		if (vis == View.INVISIBLE)

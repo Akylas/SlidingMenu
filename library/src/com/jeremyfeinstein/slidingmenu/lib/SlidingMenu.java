@@ -769,7 +769,16 @@ public class SlidingMenu extends RelativeLayout {
 	public float getBehindScrollScale() {
 		return mViewBehind.getScrollScale();
 	}
-	
+
+	/**
+	 * Gets the behind scroll scale.
+	 *
+	 * @return The scale of the parallax scroll
+	 */
+	public float getBehindSecondaryScrollScale() {
+		return mViewBehind.getSecondaryScrollScale();
+	}
+
 	/**
 	 * Gets the touch mode margin threshold
 	 * @return the touch mode margin threshold
@@ -796,6 +805,18 @@ public class SlidingMenu extends RelativeLayout {
 		if (f < 0 && f > 1)
 			throw new IllegalStateException("ScrollScale must be between 0 and 1");
 		mViewBehind.setScrollScale(f);
+	}
+
+	/**
+	 * Sets the behind scroll scale.
+	 *
+	 * @param f The scale of the parallax scroll (i.e. 1.0f scrolls 1 pixel for every
+	 * 1 pixel that the above view scrolls and 0.0f scrolls 0 pixels)
+	 */
+	public void setBehindSecondaryScrollScale(float f) {
+		if (f < 0 && f > 1)
+			throw new IllegalStateException("ScrollScale must be between 0 and 1");
+		mViewBehind.setSecondaryScrollScale(f);
 	}
 
 	/**
