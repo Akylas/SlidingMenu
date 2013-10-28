@@ -886,6 +886,12 @@ public class CustomViewAbove extends ViewGroup {
 			mIsUnableToDrag = true;
 		}
 	}
+	
+	private SlidingMenu slidingMenu;
+	public void setSlidingMenu(SlidingMenu slidingMenu)
+	{
+		this.slidingMenu = slidingMenu;
+	}
 
 	@Override
 	public void scrollTo(int x, int y) {
@@ -893,7 +899,7 @@ public class CustomViewAbove extends ViewGroup {
 		mScrollX = x;
 		if (mEnabled)
 			mViewBehind.scrollBehindTo(mContent, x, y);	
-		((SlidingMenu)getParent()).manageLayers(getPercentOpen());
+		slidingMenu.manageLayers(getPercentOpen());
 	}
 
 	private int determineTargetPage(float pageOffset, int velocity, int deltaX) {
@@ -912,6 +918,10 @@ public class CustomViewAbove extends ViewGroup {
 
 	protected float getPercentOpen() {
 		return Math.abs(mScrollX-mContent.getLeft()) / getBehindWidth();
+	}
+	
+	protected float getNonAbsPercentOpen() {
+		return (mScrollX-mContent.getLeft()) / getBehindWidth();
 	}
 
 	@Override
