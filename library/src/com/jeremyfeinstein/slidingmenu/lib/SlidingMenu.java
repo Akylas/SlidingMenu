@@ -307,7 +307,12 @@ public class SlidingMenu extends RelativeLayout {
 	public void attachToActivity(Activity activity, int slideStyle) {
 		attachToActivity(activity, slideStyle, false);
 	}
-
+	
+	
+	protected void attachViewToParent(ViewGroup group) {
+		group.addView(this, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+	}
+	
 	/**
 	 * Attaches the SlidingMenu to an entire Activity
 	 * 
@@ -337,7 +342,7 @@ public class SlidingMenu extends RelativeLayout {
 			decor.setBackgroundResource(0);
 			setBackgroundResource(0);
 			decor.removeView(decorChild);
-			decor.addView(this);
+			attachViewToParent(decor);
 			setContent(decorChild);
 			break;
 		case SLIDING_CONTENT:
@@ -346,7 +351,7 @@ public class SlidingMenu extends RelativeLayout {
 			ViewGroup contentParent = (ViewGroup)activity.findViewById(android.R.id.content);
 			View content = contentParent.getChildAt(0);
 			contentParent.removeView(content);
-			contentParent.addView(this);
+			attachViewToParent(contentParent);
 			setContent(content);
 			// save people from having transparent backgrounds
 			if (content.getBackground() == null)
