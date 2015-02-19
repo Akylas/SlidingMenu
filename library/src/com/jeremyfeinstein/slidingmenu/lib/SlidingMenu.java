@@ -309,7 +309,7 @@ public class SlidingMenu extends RelativeLayout {
 	}
 	
 	
-	protected void attachViewToParent(ViewGroup group) {
+	public void attachViewToParent(ViewGroup group) {
 		group.addView(this, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 	}
 	
