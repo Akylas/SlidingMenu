@@ -2,6 +2,7 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     android:name="com.jeremyfeinstein.slidingmenu.example.SampleListFragment"
     android:layout_width="match_parent"
+    android:background="@color/black"
     android:layout_height="match_parent" >
 
 </fragment>

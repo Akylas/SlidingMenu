@@ -106,7 +106,8 @@ public class PropertiesActivity extends BaseActivity {
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				float percent = (float) seekBar.getProgress()/seekBar.getMax();
-				getSlidingMenu().setBehindWidth((int) (percent * getSlidingMenu().getWidth()));
+                getSlidingMenu().setBehindWidth((int) (percent * getSlidingMenu().getWidth()));
+                getSlidingMenu().setSecondaryBehindWidth((int) (percent * getSlidingMenu().getWidth()));
 				getSlidingMenu().requestLayout();
 			}
 		});

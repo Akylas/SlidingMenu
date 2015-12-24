@@ -144,14 +144,12 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/list_padding"
             android:text="Behind Width"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:visibility="gone" />
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <SeekBar
             android:id="@+id/behind_width"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:layout_width="match_parent"

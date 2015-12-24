@@ -78,7 +78,10 @@ public class CustomViewBehind extends ViewGroup {
 		return 0;
 	}
 	public int getSecondaryBehindWidth(){
-		return mSecondaryContent.getWidth();
+	    if (mSecondaryContent != null){
+	        return mSecondaryContent.getWidth();
+	    }
+	    return 0;
 	}
 
 	public void setContent(View v) {

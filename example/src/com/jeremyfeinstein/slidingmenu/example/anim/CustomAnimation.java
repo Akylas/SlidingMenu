@@ -34,7 +34,7 @@ public abstract class CustomAnimation extends BaseActivity {
 		SlidingMenu sm = getSlidingMenu();
 		setSlidingActionBarEnabled(true);
 		sm.setBehindScrollScale(0.0f);
-		sm.setBehindCanvasTransformer(mTransformer);
+//		sm.setBehindCanvasTransformer(mTransformer);
 	}
 
 }

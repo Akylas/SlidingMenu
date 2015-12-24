@@ -109,15 +109,6 @@ public class CustomViewAbove extends ViewGroup {
 	 */
 	public interface OnPageChangeListener {
 
-		/**
-		 * This method will be invoked when the current page is scrolled, either as part
-		 * of a programmatically initiated smooth scroll or a user initiated touch scroll.
-		 *
-		 * @param position Position index of the first page currently being displayed.
-		 *                 Page position+1 will be visible if positionOffset is nonzero.
-		 * @param positionOffset Value from [0, 1) indicating the offset from the page at position.
-		 * @param positionOffsetPixels Value in pixels indicating the offset from position.
-		 */
 		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
 		public void onScrollComplete(int position, float positionOffset, int positionOffsetPixels);
 		public void onScrollStarted(int position, float positionOffset, int positionOffsetPixels);
@@ -323,7 +314,7 @@ public class CustomViewAbove extends ViewGroup {
 	float distanceInfluenceForSnapDuration(float f) {
 		f -= 0.5f; // center the values about 0.
 		f *= 0.3f * Math.PI / 2.0f;
-		return (float) FloatMath.sin(f);
+		return (float) Math.sin(f);
 	}
 
 	public int getDestScrollX(int page) {
@@ -716,7 +707,9 @@ public class CustomViewAbove extends ViewGroup {
 
 		switch (action) {
 		case MotionEvent.ACTION_MOVE:
-			determineDrag(ev);
+//		    if (!mIsUnableToDrag) {
+	            determineDrag(ev);
+//		    }
 			break;
 		case MotionEvent.ACTION_DOWN:
 			int index = MotionEventCompat.getActionIndex(ev);
@@ -725,12 +718,13 @@ public class CustomViewAbove extends ViewGroup {
 				break;
 			mLastMotionX = mInitialMotionX = MotionEventCompat.getX(ev, index);
 			mLastMotionY = MotionEventCompat.getY(ev, index);
+			if (isMenuOpen() && mViewBehind.menuTouchInQuickReturn(mContent, mCurItem, ev.getX() + mScrollX)) {
+                mQuickReturn = true;
+            }
 			if (thisTouchAllowed(ev)) {
 				mIsBeingDragged = false;
 				mIsUnableToDrag = false;
-				if (isMenuOpen() && mViewBehind.menuTouchInQuickReturn(mContent, mCurItem, ev.getX() + mScrollX)) {
-					mQuickReturn = true;
-				}
+				
 			} else {
 				mIsUnableToDrag = true;
 			}
@@ -756,11 +750,11 @@ public class CustomViewAbove extends ViewGroup {
 		if (!mEnabled)
 			return false;
 
-		if (!mIsBeingDragged && !thisTouchAllowed(ev))
-			return false;
+//		if (!mIsBeingDragged && !thisTouchAllowed(ev))
+//			return false;
 
-		//		if (!mIsBeingDragged && !mQuickReturn)
-		//			return false;
+		if (!mIsBeingDragged && !mQuickReturn)
+			return false;
 
 		final int action = ev.getAction();
 
@@ -783,10 +777,11 @@ public class CustomViewAbove extends ViewGroup {
 			mLastMotionX = mInitialMotionX = ev.getX();
 			break;
 		case MotionEvent.ACTION_MOVE:
+		    
 			if (!mIsBeingDragged) {	
 				determineDrag(ev);
 				if (mIsUnableToDrag)
-					return false;
+	                return false;
 			}
 			if (mIsBeingDragged) {
 				// Scroll to follow the motion event
@@ -820,9 +815,6 @@ public class CustomViewAbove extends ViewGroup {
 						velocityTracker, mActivePointerId);
 				final int scrollX = getScrollX();
 				onScrollComplete(scrollX);
-				//				final int widthWithMargin = getWidth();
-				//				final float pageOffset = (float) (scrollX % widthWithMargin) / widthWithMargin;
-				// TODO test this. should get better flinging behavior
 				final float pageOffset = (float) (scrollX - getDestScrollX(mCurItem)) / getBehindWidth();
 				final int activePointerIndex = getPointerIndex(ev, mActivePointerId);
 				if (mActivePointerId != INVALID_POINTER) {
@@ -955,7 +947,7 @@ public class CustomViewAbove extends ViewGroup {
 	private void startDrag() {
 		if (mIsBeingDragged == false)
 		{
-			onScrollStarted((int) mLastMotionX);
+			onScrollStarted(getScrollX());
 		}
 		mIsBeingDragged = true;
 		mQuickReturn = false;

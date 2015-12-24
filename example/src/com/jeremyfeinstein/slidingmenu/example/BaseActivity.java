@@ -10,9 +10,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
@@ -24,6 +24,21 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public BaseActivity(int titleRes) {
 		mTitleRes = titleRes;
 	}
+	
+	   @Override
+	    /**
+	     * When this activity starts, this method updates the current activity to this if necessary and
+	     * fire javascript 'start' and 'focus' events. Focus events will only fire if 
+	     * the activity is not a tab activity.
+	     */
+	    protected void onStart()
+	    {
+	        super.onStart();
+
+	        // Newer versions of Android appear to turn this on by default.
+	        // Turn if off until an activity indicator is shown.
+	        setProgressBarIndeterminateVisibility(false);
+	    }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -68,7 +83,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 }

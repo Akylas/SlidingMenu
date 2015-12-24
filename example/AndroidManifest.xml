@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="7"
-        android:targetSdkVersion="16" />
+        android:targetSdkVersion="21" />
     
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -17,7 +17,7 @@
         <activity
             android:name=".ExampleListActivity"
             android:configChanges="orientation|screenSize|screenLayout"
-            android:theme="@style/Theme.Sherlock.Light.DarkActionBar"
+            android:theme="@style/Theme.AppCompat"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
         <activity android:name=".fragments.ResponsiveUIActivity" />
         <activity
             android:name=".fragments.BirdActivity"
-            android:theme="@style/Theme.Sherlock.Light.DarkActionBar" />
+            android:theme="@style/Theme.AppCompat" />
         <activity android:name="com.crittercism.NotificationActivity"/>
     </application>
 
