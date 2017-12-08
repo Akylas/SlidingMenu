@@ -82,6 +82,8 @@ public class SlidingMenu extends RelativeLayout {
 	private OnCloseListener mCloseListener;
 	
 	private OnScrolledListener mOnScrolledListener;
+
+    private ViewGroup  mContentParent;
 	
 //	private OnScrolledListenerListener mScrollListener;
 
@@ -356,6 +358,7 @@ public class SlidingMenu extends RelativeLayout {
 	
 	
 	public void attachViewToParent(ViewGroup group) {
+	    mContentParent = group;
 		group.addView(this, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 	}
 	
@@ -450,6 +453,10 @@ public class SlidingMenu extends RelativeLayout {
 	public View getContent() {
 		return mViewAbove.getContent();
 	}
+	
+	public ViewGroup getContentParent() {
+        return mContentParent;
+    }
 
 	/**
 	 * Set the behind view (menu) content from a layout resource. The resource
